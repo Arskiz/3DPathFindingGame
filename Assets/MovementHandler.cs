@@ -4,13 +4,17 @@ public class MovementHandler : MonoBehaviour
 {
     [SerializeField] float speed = 10f; // Pelaajan nopeus
     [SerializeField] Transform cameraTransform; // Kameran transform, m��ritett�v� Unity Editorissa
+    PauseMenu PauseMenu;
     private void Start()
     {
+        PauseMenu = FindAnyObjectByType<PauseMenu>();
         cameraTransform = transform.Find("Main Camera");
     }
 
     void Update()
     {
+        if (PauseMenu.paused) return;
+        
         // Haetaan sy�tteet k�ytt�j�lt�
         float horizontal = Input.GetAxis("Horizontal"); // Sivuliike (A/D tai nuolin�pp�imet)
         float vertical = Input.GetAxis("Vertical");     // Liike eteen/taakse (W/S tai nuolin�pp�imet)

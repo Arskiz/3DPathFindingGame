@@ -5,9 +5,10 @@ public class CameraController : MonoBehaviour
     public Transform playerBody; // Pelaajan (kapselin) transform
     public float mouseSensitivity = 100f; // Hiiren herkkyys
     private float xRotation = 0f; // Kameran pystysuuntainen kierto
-
+    PauseMenu pauseMenu;
     void Start()
     {
+        pauseMenu = FindAnyObjectByType<PauseMenu>();
         // Lukitaan hiiri pelin keskelle ja piilotetaan se
         playerBody = transform.parent;
         Cursor.lockState = CursorLockMode.Locked;
@@ -15,6 +16,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (pauseMenu.paused) return;
         // Haetaan hiiren liike arvot
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

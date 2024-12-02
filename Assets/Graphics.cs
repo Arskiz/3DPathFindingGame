@@ -5,9 +5,10 @@ using UnityEngine;
 public class Graphics : MonoBehaviour
 {
     // Start is called before the first frame update
+    [SerializeField] int maxFPS = 60;
     void Start()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = maxFPS;
     }
 
     // Update is called once per frame

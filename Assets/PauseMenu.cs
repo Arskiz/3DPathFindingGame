@@ -28,6 +28,7 @@ public class PauseMenu : MonoBehaviour
         mLockTypes = new mLockType(CursorLockMode.Locked, CursorLockMode.None);
         
     }
+
     public void PauseGame()
     {
         paused = true;
@@ -41,11 +42,7 @@ public class PauseMenu : MonoBehaviour
     void ToggleVisibility()
     {
         paused = !paused;
-        switch (paused)
-        {
-            case true: Time.timeScale = 0.0f; break;
-            case false: Time.timeScale = 1.0f; break;
-        }
+        
     }
 
 
@@ -76,6 +73,11 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
+        switch (paused)
+        {
+            case true: Time.timeScale = 0.0f; break;
+            case false: Time.timeScale = 1.0f; break;
+        }
         pMenu.SetActive(paused);
         CursorH();
 

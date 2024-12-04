@@ -9,7 +9,7 @@ using TMPro;
 public class MenuButtons : MonoBehaviour
 {
     [SerializeField]GameObject settingsCParent;
-    bool settingsOpen = false;
+    [SerializeField] bool settingsOpen = false;
 
     // Btns
     Button pButton;
@@ -17,16 +17,17 @@ public class MenuButtons : MonoBehaviour
     Button qButton;
 
     // Setting Categories
-    GameObject[] sCategories = {  };
+    [SerializeField] GameObject[] sCategories = {  };
 
     // Setting parent's parent
     [SerializeField] GameObject settingsInterface;
 
     // Credits object
     [SerializeField] GameObject creditsObject;
+
     void OnEnable()
     {
-        if(sCategories.Length > 0)
+        if(sCategories.Length < 1)
         {
             sCategories = new GameObject[] { GameObject.Find("vSettings"), GameObject.Find("dSettings"), GameObject.Find("aSettings") };
         }
@@ -86,6 +87,7 @@ public class MenuButtons : MonoBehaviour
     void Toggle(GameObject target)
     {
         bool isEnabled = target.activeSelf;
+
         // Alt: target = !target;
         switch(isEnabled)
         {

@@ -1,40 +1,90 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using TMPro;
 
 public class MovementHandler : MonoBehaviour
 {
-    [SerializeField] float speed = 10f; // Pelaajan nopeus
-    [SerializeField] Transform cameraTransform; // Kameran transform, m��ritett�v� Unity Editorissa
-    PauseMenu PauseMenu;
-    private void Start()
+    private NavMeshAgent agent;
+
+    public GameObject projectilePrefab; // Ammus
+    public Transform projectileSpawnPoint; // Sijainti mistä ammus ammutaan
+    public float projectileSpeed = 10f; // Ammuksen nopeus
+    public float projectileLifeTime = 1.4f; // Aika, jonka jälkeen ammus tuhoutuu
+    private int projectileCount = 0; // Kuinka monta ammusta on käytössä
+    public TextMeshProUGUI projectileCounterText; // Teksti missä näytetään panos määrä
+
+    // Start is called before the first frame update
+    void Start()
     {
-        PauseMenu = FindAnyObjectByType<PauseMenu>();
-        cameraTransform = transform.Find("Main Camera");
+        // Haetaan komponentti
+        agent = GetComponent<NavMeshAgent>();
+        UpdateProjectileCounterUI(); // Päivitetään alussa
     }
 
+    // Update is called once per frame
     void Update()
     {
-        if (PauseMenu.paused) return;
-        
-        // Haetaan sy�tteet k�ytt�j�lt�
-        float horizontal = Input.GetAxis("Horizontal"); // Sivuliike (A/D tai nuolin�pp�imet)
-        float vertical = Input.GetAxis("Vertical");     // Liike eteen/taakse (W/S tai nuolin�pp�imet)
+        // Jos hiirtä klikataan maahan
+        if (Input.GetMouseButtonDown(0))
+        {
+            // Luodaan ray hiiren sijainnista
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
-        // Lasketaan liikesuunta suhteessa kameran forward- ja right-vektoreihin
-        Vector3 forward = cameraTransform.forward; // Kameran suuntaan osoittava vektori
-        Vector3 right = cameraTransform.right;     // Kameran oikealle osoittava vektori
+            // Tarkistetaan osuuko ray johonkin
+            if (Physics.Raycast(ray, out hit))
+            {
+                // Liikutetaan pelaajaa klikattuun kohteen sijaintiin
+                agent.SetDestination(hit.point);
+            }
+        }
 
-        // Nollataan Y-komponentti, jotta liike tapahtuu vain tasossa
-        forward.y = 0f;
-        right.y = 0f;
+        // Ammutaan ammus painamalla space
+        if (Input.GetKeyDown(KeyCode.Space) && projectileCount > 0)
+        {
+            ShootProjectile();
+            projectileCount--;
+            UpdateProjectileCounterUI(); // Päivitetään kun vähenee
+        }
+    }
 
-        // Normalisoidaan vektorit, jotta nopeus on tasainen
-        forward.Normalize();
-        right.Normalize();
+    void ShootProjectile()
+    {
+        // Luodaan ammus prefabistä
+        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
 
-        // Lasketaan liikkeen suunta
-        Vector3 moveDirection = forward * vertical + right * horizontal;
+        // Lisätään ammukseen liikevoima
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.velocity = projectileSpawnPoint.forward * projectileSpeed;
+        }
 
-        // Siirret��n pelaajaa
-        transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+        Destroy(projectile, projectileLifeTime); // Tuhotaan ammus ajan kuluttua
+    }
+
+    void UpdateProjectileCounterUI()
+    {
+        // Päivitetään UI teksti näyttämään nykyinen panos määrä
+        if (projectileCounterText != null)
+        {
+            projectileCounterText.text = "Projectiles: " + projectileCount;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Jos törmätään objectiin tällä tagilla
+        if (other.gameObject.CompareTag("Collectable"))
+        {
+            projectileCount += 5; // Lisätään 5 panosta
+            Debug.Log("5 panosta kerätty! Yhteensä: " + projectileCount);
+
+            UpdateProjectileCounterUI(); // Päivitetään kun lisätään
+
+            Destroy(other.gameObject); // Tuhotaan objecti
+        }
     }
 }

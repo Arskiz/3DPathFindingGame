@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -8,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpForce = 5f;
     private Rigidbody rb;
     private bool isGrounded;
+    public int jumpsRemaining = 5;
+    float timeLasted = 0.0f;
 
     public float rayCastDistance = 1.2f; // Raycast et‰isyys maan havaitsemiseen
 
@@ -23,6 +27,15 @@ public class PlayerMovement : MonoBehaviour
         Move();
         GroundCheck();
         Jump();
+        TimeLasted();
+    }
+
+    void TimeLasted()
+    {
+        timeLasted += Time.deltaTime;
+        TextMeshProUGUI timeLastedText;
+        timeLastedText = GameObject.Find("timeLasted").GetComponent<TextMeshProUGUI>();
+        timeLastedText.text = $"Time Lasted: {timeLasted.ToString("F1")}";
     }
 
     void Move()
@@ -36,10 +49,17 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W) && isGrounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); // Nollaa pystysuuntaisen liikkeen ennen hyppy‰
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false; // Estet‰‰n useampi hyppy kerralla
+            if (jumpsRemaining > 0)
+            {
+                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); // Nollaa pystysuuntaisen liikkeen ennen hyppy‰
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                isGrounded = false; // Estet‰‰n useampi hyppy kerralla
+                jumpsRemaining -= 1;
+            }
         }
+        TextMeshProUGUI jumpRemainingText;
+        jumpRemainingText = GameObject.Find("jumpsremaining").GetComponent<TextMeshProUGUI>();
+        jumpRemainingText.text = $"Jumps Remaining: {jumpsRemaining}";
     }
 
     void GroundCheck()

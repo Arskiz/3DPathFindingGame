@@ -10,6 +10,10 @@ public class InfiniteGround : MonoBehaviour
 
     private GameObject[] groundPieces; // Kaksi maapalaa, jotka vuorottelevat
 
+    private List<GameObject> spawnedCoins = new List<GameObject>();
+
+    [SerializeField] GameObject coinPrefab;
+
     // Start is called before the first frame update
     void Start()
     {

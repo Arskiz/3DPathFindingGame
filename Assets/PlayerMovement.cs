@@ -8,10 +8,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] float jumpForce = 5f;
+    [SerializeField] bool infiniteJumping = false;
     private Rigidbody rb;
     private bool isGrounded;
     public int jumpsRemaining = 5;
     float timeLasted = 0.0f;
+
 
     public float rayCastDistance = 1.2f; // Raycast et‰isyys maan havaitsemiseen
 
@@ -35,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
         timeLasted += Time.deltaTime;
         TextMeshProUGUI timeLastedText;
         timeLastedText = GameObject.Find("timeLasted").GetComponent<TextMeshProUGUI>();
-        timeLastedText.text = $"Time Lasted: {timeLasted.ToString("F1")}";
+        timeLastedText.text = $"Time Lasted: {timeLasted.ToString("F1")}secs";
     }
 
     void Move()
@@ -49,12 +51,13 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W) && isGrounded)
         {
-            if (jumpsRemaining > 0)
+            if (jumpsRemaining > 0 || infiniteJumping)
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); // Nollaa pystysuuntaisen liikkeen ennen hyppy‰
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 isGrounded = false; // Estet‰‰n useampi hyppy kerralla
-                jumpsRemaining -= 1;
+                if(!infiniteJumping)
+                    jumpsRemaining -= 1;
             }
         }
         TextMeshProUGUI jumpRemainingText;

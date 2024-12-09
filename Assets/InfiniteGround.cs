@@ -8,11 +8,7 @@ public class InfiniteGround : MonoBehaviour
     [SerializeField] float groundLength = 100f; // Yhden maapalan pituus
     [SerializeField] float moveSpeed = 5f; // Maan liikkumisnopeus
 
-    private GameObject[] groundPieces; // Kaksi maapalaa, jotka vuorottelevat
-
-    private List<GameObject> spawnedCoins = new List<GameObject>();
-
-    [SerializeField] GameObject coinPrefab;
+    public GameObject[] groundPieces; // Kaksi maapalaa, jotka vuorottelevat
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +19,8 @@ public class InfiniteGround : MonoBehaviour
         {
             int randomIndex = Random.Range(0, groundPrefabs.Length); // Valitaan satunnainen maapala
             groundPieces[i] = Instantiate(groundPrefabs[randomIndex], new Vector3(0, 0, i * groundLength), Quaternion.identity);
+            CoinHandler cH = FindAnyObjectByType<CoinHandler>();
+            cH.SpawnCoins(groundPieces[i]);
         }
     }
 
@@ -42,6 +40,8 @@ public class InfiniteGround : MonoBehaviour
                 int randomIndex = Random.Range(0, groundPrefabs.Length); // Satunnainen maapala
                 float newZ = groundPieces[i == 0 ? 1 : 0].transform.position.z + groundLength;
                 groundPieces[i] = Instantiate(groundPrefabs[randomIndex], new Vector3(0, 0, newZ), Quaternion.identity);
+                CoinHandler cH = FindAnyObjectByType<CoinHandler>();
+                cH.SpawnCoins(groundPieces[i]);
             }
         }
     }

@@ -47,5 +47,6 @@ public class CoinHandler : MonoBehaviour
     public void CollectCoin()
     {
         collectedCoins += 1;
+        GetComponent<AudioSource>().Play();
     }
 }
